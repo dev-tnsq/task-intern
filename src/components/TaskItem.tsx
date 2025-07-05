@@ -10,16 +10,20 @@ interface TaskItemProps {
 }
 
 const TaskItem = ({ task, onToggle, onDelete, onEdit, searchTerm }: TaskItemProps) => {
-  const [showConfirmDelete, setShowConfirmDelete] = useState(false);
+  const [showConfirmModal, setShowConfirmModal] = useState(false);
   const [isAnimating, setIsAnimating] = useState(false);
 
   const handleDeleteClick = () => {
-    if (showConfirmDelete) {
-      onDelete(task.id);
-    } else {
-      setShowConfirmDelete(true);
-      setTimeout(() => setShowConfirmDelete(false), 3000);
-    }
+    setShowConfirmModal(true);
+  };
+
+  const handleConfirmDelete = () => {
+    onDelete(task.id);
+    setShowConfirmModal(false);
+  };
+
+  const handleCancelDelete = () => {
+    setShowConfirmModal(false);
   };
 
   const handleToggle = () => {
@@ -74,9 +78,9 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit, searchTerm }: TaskItemProp
   const isOverdue = task.dueDate && !task.completed && new Date(task.dueDate) < new Date();
 
   return (
-    <div className={`bg-white rounded-lg border border-gray-200 p-4 shadow-sm transition-all duration-300 mb-2 ${
+    <div className={`bg-white dark:bg-gray-800 rounded-lg border border-gray-200 dark:border-gray-700 p-4 shadow-sm transition-all duration-300 mb-2 ${
       task.completed ? 'opacity-60' : ''
-    } ${isOverdue ? 'border-red-400' : ''}`}>
+    } ${isOverdue ? 'border-red-400 dark:border-red-500' : ''}`}>
       <div className="flex items-start gap-4">
         <button
           onClick={handleToggle}
@@ -91,18 +95,18 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit, searchTerm }: TaskItemProp
           {task.completed && <span className="block w-3 h-3 bg-white rounded-full" />}
         </button>
         <div className="flex-1 min-w-0">
-          <h4 className={`font-medium text-gray-900 ${task.completed ? 'line-through' : ''}`}>{searchTerm ? highlightText(task.title, searchTerm) : task.title}</h4>
+          <h4 className={`font-medium text-gray-900 dark:text-gray-100 ${task.completed ? 'line-through' : ''}`}>{searchTerm ? highlightText(task.title, searchTerm) : task.title}</h4>
           {task.description && (
-            <p className={`text-sm text-gray-500 mt-1 ${task.completed ? 'line-through' : ''}`}>{searchTerm ? highlightText(task.description, searchTerm) : task.description}</p>
+            <p className={`text-sm text-gray-500 dark:text-gray-300 mt-1 ${task.completed ? 'line-through' : ''}`}>{searchTerm ? highlightText(task.description, searchTerm) : task.description}</p>
           )}
           {task.tags && task.tags.length > 0 && (
             <div className="flex flex-wrap gap-1 mt-2">
               {task.tags.map((tag) => (
-                <span key={tag} className="bg-blue-100 text-blue-700 px-2 py-1 rounded-full text-xs">#{tag}</span>
+                <span key={tag} className="bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 px-2 py-1 rounded-full text-xs">#{tag}</span>
               ))}
             </div>
           )}
-          <div className="flex items-center gap-4 mt-2 text-xs text-gray-400">
+          <div className="flex items-center gap-4 mt-2 text-xs text-gray-400 dark:text-gray-300">
             <span>Created {formatDate(task.createdAt)}</span>
             {task.dueDate && (
               <div className={`flex items-center gap-1 ${
@@ -121,24 +125,43 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit, searchTerm }: TaskItemProp
         <div className="flex-shrink-0 flex gap-2">
           <button
             onClick={() => onEdit(task)}
-            className="p-2 hover:bg-gray-100 rounded-md transition-colors duration-200 hover:scale-105"
+            className="p-2 bg-blue-100 dark:bg-blue-900 text-blue-700 dark:text-blue-200 hover:bg-blue-200 dark:hover:bg-blue-800 rounded-md transition-colors duration-200 hover:scale-105"
             title="Edit task"
           >
             ✏️
           </button>
           <button
             onClick={handleDeleteClick}
-            className={`p-2 rounded-md transition-all duration-200 hover:scale-105 ${
-              showConfirmDelete
-                ? 'bg-red-500 text-white hover:bg-red-600'
-                : 'hover:bg-gray-100'
-            }`}
-            title={showConfirmDelete ? 'Click again to confirm' : 'Delete task'}
+            className="p-2 bg-red-100 dark:bg-red-900 text-red-700 dark:text-red-200 hover:bg-red-200 dark:hover:bg-red-800 rounded-md transition-all duration-200 hover:scale-105"
+            title="Delete task"
           >
             🗑️
           </button>
         </div>
       </div>
+      {/* Modal for delete confirmation */}
+      {showConfirmModal && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black bg-opacity-40">
+          <div className="bg-white dark:bg-gray-800 rounded-lg shadow-lg p-6 w-full max-w-xs">
+            <h3 className="text-lg font-semibold mb-4 text-gray-900 dark:text-gray-100">Delete Task</h3>
+            <p className="mb-6 text-gray-700 dark:text-gray-300">Are you sure you want to delete this task?</p>
+            <div className="flex justify-end gap-2">
+              <button
+                onClick={handleCancelDelete}
+                className="px-4 py-2 rounded bg-gray-200 dark:bg-gray-700 text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-600 transition"
+              >
+                Cancel
+              </button>
+              <button
+                onClick={handleConfirmDelete}
+                className="px-4 py-2 rounded bg-red-500 text-white hover:bg-red-600 transition"
+              >
+                Delete
+              </button>
+            </div>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
