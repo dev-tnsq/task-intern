@@ -96,6 +96,16 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit, searchTerm }: TaskItemProp
         </button>
         <div className="flex-1 min-w-0">
           <h4 className={`font-medium text-gray-900 dark:text-gray-100 ${task.completed ? 'line-through' : ''}`}>{searchTerm ? highlightText(task.title, searchTerm) : task.title}</h4>
+          {/* Priority label */}
+          {task.priority && (
+            <span className={`inline-block text-xs font-semibold rounded px-2 py-0.5 mt-1 mr-2
+              ${task.priority === 'high' ? 'bg-red-100 text-red-700 dark:bg-red-900 dark:text-red-200' : ''}
+              ${task.priority === 'medium' ? 'bg-yellow-100 text-yellow-700 dark:bg-yellow-900 dark:text-yellow-200' : ''}
+              ${task.priority === 'low' ? 'bg-green-100 text-green-700 dark:bg-green-900 dark:text-green-200' : ''}
+            `}>
+              {task.priority.charAt(0).toUpperCase() + task.priority.slice(1)} Priority
+            </span>
+          )}
           {task.description && (
             <p className={`text-sm text-gray-500 dark:text-gray-300 mt-1 ${task.completed ? 'line-through' : ''}`}>{searchTerm ? highlightText(task.description, searchTerm) : task.description}</p>
           )}
@@ -166,4 +176,4 @@ const TaskItem = ({ task, onToggle, onDelete, onEdit, searchTerm }: TaskItemProp
   );
 };
 
-export default TaskItem; 
+export default TaskItem;

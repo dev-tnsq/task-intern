@@ -189,7 +189,9 @@ const Dashboard = ({ username, onLogout }: DashboardProps) => {
           <>
             <TaskFilterComponent
               currentFilter={filter}
-              onFilterChange={setFilter}
+              onFilterChange={(f) => {
+                if (f === 'all' || f === 'completed' || f === 'pending') setFilter(f);
+              }}
               taskCounts={taskCounts}
             />
             <TaskList

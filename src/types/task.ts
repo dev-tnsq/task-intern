@@ -6,6 +6,7 @@ export interface Task {
   createdAt: string;
   dueDate?: string;
   tags?: string[];
+  priority?: 'low' | 'medium' | 'high';
 }
 
 export type TaskFilter = 'all' | 'completed' | 'pending';

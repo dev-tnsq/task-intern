@@ -13,6 +13,7 @@ const TaskForm = ({ onSubmit, editingTask, onCancel }: TaskFormProps) => {
   const [dueDate, setDueDate] = useState(editingTask?.dueDate || '');
   const [tags, setTags] = useState<string[]>(editingTask?.tags || []);
   const [newTag, setNewTag] = useState('');
+  const [priority, setPriority] = useState<'low' | 'medium' | 'high'>(editingTask?.priority || 'medium');
   const titleRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -28,6 +29,7 @@ const TaskForm = ({ onSubmit, editingTask, onCancel }: TaskFormProps) => {
         dueDate: dueDate || undefined,
         tags: tags.length > 0 ? tags : undefined,
         completed: editingTask?.completed || false,
+        priority,
       });
       if (!editingTask) {
         setTitle('');
@@ -35,6 +37,7 @@ const TaskForm = ({ onSubmit, editingTask, onCancel }: TaskFormProps) => {
         setDueDate('');
         setTags([]);
         setNewTag('');
+        setPriority('medium');
         titleRef.current?.focus();
       }
     }
@@ -109,6 +112,21 @@ const TaskForm = ({ onSubmit, editingTask, onCancel }: TaskFormProps) => {
             min={getTodayDate()}
             className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
           />
+        </div>
+        <div>
+          <label htmlFor="priority" className="block text-sm font-medium text-gray-700 mb-2">
+            Priority
+          </label>
+          <select
+            id="priority"
+            value={priority}
+            onChange={e => setPriority(e.target.value as 'low' | 'medium' | 'high')}
+            className="w-full px-4 py-2 border rounded focus:outline-none focus:ring-2 focus:ring-blue-400"
+          >
+            <option value="low">Low</option>
+            <option value="medium">Medium</option>
+            <option value="high">High</option>
+          </select>
         </div>
         <div>
           <label className="block text-sm font-medium text-gray-700 mb-2">

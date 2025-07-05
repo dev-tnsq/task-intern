@@ -9,6 +9,7 @@ const TaskManager: React.FC = () => {
   const [tasks, setTasks] = useState<Task[]>([]);
   const [filter, setFilter] = useState<TaskFilterType>('all');
   const [editingTask, setEditingTask] = useState<Task | undefined>(undefined);
+  const [priorityFilter, setPriorityFilter] = useState<'all' | 'high' | 'medium' | 'low'>('all');
 
   useEffect(() => {
     setTasks(loadTasks());
@@ -42,10 +43,18 @@ const TaskManager: React.FC = () => {
     setTasks(tasks.map((task: Task) => task.id === id ? { ...task, completed: !task.completed } : task));
   };
 
+  const handleFilterChange = (filter: TaskFilterType | string) => {
+    if (filter === 'all' || filter === 'completed' || filter === 'pending') {
+      setFilter(filter);
+    }
+  };
+
   const filteredTasks = tasks.filter((task: Task) => {
-    if (filter === 'completed') return task.completed;
-    if (filter === 'pending') return !task.completed;
-    return true;
+    let statusMatch = true;
+    if (filter === 'completed') statusMatch = task.completed;
+    else if (filter === 'pending') statusMatch = !task.completed;
+    let priorityMatch = priorityFilter === 'all' ? true : task.priority === priorityFilter;
+    return statusMatch && priorityMatch;
   });
 
   const counts = {
@@ -67,7 +76,13 @@ const TaskManager: React.FC = () => {
         editingTask={editingTask}
         onCancel={() => setEditingTask(undefined)}
       />
-      <TaskFilter currentFilter={filter} onFilterChange={setFilter} taskCounts={counts} />
+      <TaskFilter
+        currentFilter={filter}
+        onFilterChange={handleFilterChange}
+        taskCounts={counts}
+        priorityFilter={priorityFilter}
+        onPriorityFilterChange={setPriorityFilter}
+      />
       <TaskList
         tasks={filteredTasks}
         onEdit={setEditingTask}
