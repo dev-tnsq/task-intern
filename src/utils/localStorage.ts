@@ -1,4 +1,4 @@
-import { Task } from '../components/TaskManager';
+import { Task } from '../types/task';
 
 const TASKS_KEY = 'tasks';
 

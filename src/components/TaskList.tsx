@@ -1,30 +1,32 @@
 import React from 'react';
-import { Task } from './TaskManager';
+import { Task } from '../types/task';
 import TaskItem from './TaskItem';
 
 interface TaskListProps {
   tasks: Task[];
+  onToggle: (id: string) => void;
+  onDelete: (id: string) => void;
   onEdit: (task: Task) => void;
-  onDelete: (id: number) => void;
-  onToggleComplete: (id: number) => void;
+  searchTerm?: string;
 }
 
-const TaskList: React.FC<TaskListProps> = ({ tasks, onEdit, onDelete, onToggleComplete }) => {
+const TaskList = ({ tasks, onToggle, onDelete, onEdit, searchTerm }: TaskListProps) => {
   if (tasks.length === 0) {
-    return <div className="text-center text-gray-500 mt-8">No tasks to display.</div>;
+    return <div className="text-center text-gray-400 mt-8">No tasks to display.</div>;
   }
   return (
-    <ul className="space-y-2">
+    <div className="space-y-2">
       {tasks.map(task => (
         <TaskItem
           key={task.id}
           task={task}
-          onEdit={onEdit}
+          onToggle={onToggle}
           onDelete={onDelete}
-          onToggleComplete={onToggleComplete}
+          onEdit={onEdit}
+          searchTerm={searchTerm}
         />
       ))}
-    </ul>
+    </div>
   );
 };
 

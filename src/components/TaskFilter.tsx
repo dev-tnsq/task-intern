@@ -1,28 +1,43 @@
 import React from 'react';
-
-export type TaskFilterType = 'all' | 'completed' | 'pending';
+import { TaskFilter as FilterType } from '../types/task';
 
 interface TaskFilterProps {
-  filter: TaskFilterType;
-  setFilter: (filter: TaskFilterType) => void;
-  counts: { all: number; completed: number; pending: number };
+  currentFilter: FilterType;
+  onFilterChange: (filter: FilterType) => void;
+  taskCounts: {
+    all: number;
+    completed: number;
+    pending: number;
+  };
 }
 
-const TaskFilter: React.FC<TaskFilterProps> = ({ filter, setFilter, counts }) => {
-  const filters: { label: string; value: TaskFilterType }[] = [
-    { label: `All (${counts.all})`, value: 'all' },
-    { label: `Completed (${counts.completed})`, value: 'completed' },
-    { label: `Pending (${counts.pending})`, value: 'pending' },
+const TaskFilter = ({ currentFilter, onFilterChange, taskCounts }: TaskFilterProps) => {
+  const filters: { key: FilterType; label: string; count: number }[] = [
+    { key: 'all', label: 'All Tasks', count: taskCounts.all },
+    { key: 'pending', label: 'Pending', count: taskCounts.pending },
+    { key: 'completed', label: 'Completed', count: taskCounts.completed },
   ];
+
   return (
-    <div className="flex gap-2 mb-4">
-      {filters.map(f => (
+    <div className="flex flex-wrap gap-2 mb-4">
+      {filters.map((filter) => (
         <button
-          key={f.value}
-          onClick={() => setFilter(f.value)}
-          className={`px-4 py-1 rounded-full border transition text-sm font-medium ${filter === f.value ? 'bg-blue-500 text-white' : 'bg-white text-blue-500 border-blue-500 hover:bg-blue-100'}`}
+          key={filter.key}
+          onClick={() => onFilterChange(filter.key)}
+          className={`px-4 py-1 rounded-full border transition text-sm font-medium ${
+            currentFilter === filter.key
+              ? 'bg-blue-500 text-white border-blue-500'
+              : 'bg-white text-blue-500 border-blue-500 hover:bg-blue-100'
+          }`}
         >
-          {f.label}
+          {filter.label}
+          <span className={`ml-2 px-2 py-0.5 text-xs rounded-full ${
+            currentFilter === filter.key
+              ? 'bg-white text-blue-500'
+              : 'bg-blue-100 text-blue-500'
+          }`}>
+            {filter.count}
+          </span>
         </button>
       ))}
     </div>
